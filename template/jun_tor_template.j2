@@ -1,0 +1,119 @@
+system {
+		host-name {{hostname}};
+		auto-snapshot;
+		time-zone GMT;
+		arp {
+			aging-timer 5;
+		}
+		root-authentication encrypted-password {{rootPass}};
+		services {
+			ssh {
+				protocol-version v2;
+			}
+			netconf {
+				ssh;
+			}
+		}
+		syslog {
+			user * {
+				any emergency;
+			}
+			host 1.1.1.1 {
+				any info;
+			}
+			file messages {
+				any notice;
+				authorization info;
+			}
+			file interactive-commands {
+				interactive-commands any;
+			}
+			source-address {{man_ip}};
+		}
+		commit synchronize;
+		ntp {
+			server 5.5.5.5;
+			source-address {{man_ip}};
+		}
+}
+chassis {
+		redundancy {
+			graceful-switchover;
+		}
+		aggregated-devices {
+			ethernet { 
+				device-count 4;
+			}
+		}
+		alarm { 
+			management-ethernet {
+				link-down ignore;
+			}
+		}
+		forwarding-options { 
+			l2-profile-one;
+			}
+}
+interfaces { 
+		irb {
+			unit 812 {
+				family inet{
+					address {{man_ip}}/25;
+				}
+			}
+		}
+		xe-0/0/47 {
+			description "ae trunk";
+			ether-options {
+				802.3ad ae47;
+			}
+		}
+		xe-1/0/47 {
+			description "ae trunk";
+			ether-options {
+				802.3ad ae47;
+			}
+		}
+		ae47 {
+			description "ae trunk";
+			aggregated-ether-options {
+				link-speed 10g;
+				lacp {
+					active;
+					periodic fast;
+				}
+			}
+			unit 0 {
+				family ethernet-switching{
+					interface-mode trunk;
+					vlan members all;
+				}
+			}
+		}
+}
+forwarding-options { 
+	storm-control-profiles default {
+		all;
+	}
+}
+routing-options { 
+	graceful-restart;
+	static {
+		route 0.0.0.0/0 next-hop 1.1.1.2;
+	}
+}
+protocols {
+	lldp {
+		interface all;
+	}
+	lldp-med {
+		interface all;
+	}
+	layer2-control {
+		nonstop-bridging;
+	}
+	rstp {
+		interface ae47;
+	}
+}
+

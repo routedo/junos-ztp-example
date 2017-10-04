@@ -1,0 +1,9 @@
+        host {{hostname}}{ 
+		hardware ethernet {{mac_address}};
+        fixed-address {{man_ip}};
+        option routers                  192.168.255.1;
+        option subnet-mask              255.255.255.0;
+        option zerop.config-file-name "{{hostname}}.config";
+        }
+
+

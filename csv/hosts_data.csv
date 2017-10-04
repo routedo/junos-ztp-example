@@ -1,0 +1,5 @@
+hostname,int_range,data_vlan,data_vlan_id,voice_vlan,voice_vlan_id,man_ip,vc_number,Location,mac_address,rootPass
+office_sw_vc0,office_00_vc0_access,crp.dat,180,crp.voi,280,192.168.255.1,2,Rack A01,22:22:22:22:22:22,Juniper
+office_sw_vc1,office_01_vc1_access,crp.dat,180,crp.voi,280,192.168.255.2,2,RACK 03,33:33:33:33:33:33,Juniper
+tor_02-sw,,,,,,192.168.255.3,0,RACK 05,44:44:44:44:44:44,Juniper
+tor_03-sw,,,,,,192.168.255.4,0,RACK 07,55:55:55:55:55:55,Juniper

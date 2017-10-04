@@ -1,0 +1,134 @@
+system {
+		host-name {{hostname}};
+		auto-snapshot;
+		root-authentication encrypted-password {{rootPass}};
+		services {
+			ssh {
+				protocol-version v2;
+			}
+			netconf {
+				ssh;
+			}
+		}
+		syslog {
+			user * {
+				any emergency;
+			}
+			host 1.1.1.1 {
+				any info;
+			}
+			file messages {
+				any notice;
+				authorization info;
+			}
+			file interactive-commands {
+				interactive-commands any;
+			}
+			source-address {{man_ip}};
+		}
+		commit synchronize;
+		ntp {
+			server 5.5.5.5;
+			source-address {{man_ip}};
+		}
+}
+chassis {
+		redundancy {
+			graceful-switchover;
+		}
+		aggregated-devices {
+			ethernet { 
+				device-count 4;
+			}
+		}
+		alarm { 
+			management-ethernet {
+				link-down ignore;
+			}
+		}
+}
+interfaces { 
+		interface-range {{int_range}}  {
+		member-range ge-0/0/0 to ge-0/0/47;
+		no-traps;
+		unit 0 {
+			family ethernet-switching {
+					interface-mode access;
+					vlan members {{data_vlan}};
+					recovery-timeout 300;
+			}
+		}
+		}
+		irb {
+			unit 888 {
+				description "DATA NETWORK GATEWAY ADDRESS";
+				family inet{
+						address {{man_ip}}/25;
+				}
+			}
+		}
+		{% for t in range(48) %}
+		ge-0/0/{{t}} {
+			unit 0 {
+				family ethernet-switching {
+					interface-mode access;
+				}
+			}
+		}
+		{% endfor %}
+}
+switch-options {
+		voip {
+			interface {{int_range}} {
+				vlan {{voice_vlan}}; 
+				forwarding-class expedited-forwarding;
+			}
+		}
+		{% for t in range(48) %}
+		interface ge-0/0/{{t}}.0 {
+			interface-mac-limit { 
+				10;
+				packet-action shutdown;
+			}
+		}
+		{% endfor %}
+}
+vlans {
+	infra-core { 
+		vlan-id 888;
+		l3-interface irb.888;
+	}
+	{{data_vlan}} {
+		vlan-id {{data_vlan_id}};
+		forwarding-options {
+			dhcp-security {
+				group trusted-data {
+					overrides {
+						trusted;
+					}
+					interface ae0;
+					interface ge-0/0/46.0;
+					interface ge-0/0/47.0;
+				}
+			}
+		}
+	}  
+	{{voice_vlan}} {
+		vlan-id {{voice_vlan_id}};
+		forwarding-options {
+			dhcp-security {
+				group trusted-data {
+					overrides {
+						trusted;
+					}
+					interface ae0;
+					interface ge-0/0/46.0;
+					interface ge-0/0/47.0;
+				}
+			}
+		}
+	} 
+}
+poe {
+	interface all;
+}
