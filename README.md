@@ -15,11 +15,11 @@
 ###### ztpExample.py
 	This file contains the following examples:
 	# template_loader(cvs_file)
-		This function generates a Juniper configuration file using jinja2 templates
+		This function generates a Juniper configuration file using jinja2 templates.
 		The code for this function is located in a file named ztpRender.py.
 	
 	# dhcp_loader(cvs_file, dhcp_conf_dest)
-		This function generates an updated dhcpd.conf file using jinja2 templates
+		This function generates an updated dhcpd.conf file using jinja2 templates.
 		The code for this function is located in a file named ztpRender.py.
 
 # License
